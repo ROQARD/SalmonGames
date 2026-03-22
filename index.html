@@ -1,1 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Hub</title>
+    <style>
+        body { background: #1a1a2e; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .game-card { cursor: pointer; transition: 0.2s; border-radius: 10px; overflow: hidden; background: #16213e; }
+        .game-card:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+        .game-card img { width: 100%; display: block; }
+        .game-card p { padding: 8px; margin: 0; font-size: 14px; text-align: center; }
+        #player-container { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 100; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .close-btn { position: absolute; top: 10px; right: 10px; padding: 10px 20px; background: red; color: white; border: none; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
 
+    <h1>Game Arcade</h1>
+    <div class="grid" id="game-grid">Loading Games...</div>
+
+    <div id="player-container">
+        <button class="close-btn" onclick="closeGame()">Close Game</button>
+        <iframe id="game-iframe" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        // Use your Vercel proxy instead of the blocked URL
+        const PROXY_API = '/api-proxy/ext/v1/games';
+
+        async function loadGames() {
+            try {
+                const response = await fetch(PROXY_API);
+                const data = await response.json();
+                const grid = document.getElementById('game-grid');
+                grid.innerHTML = '';
+
+                data.forEach(game => {
+                    const card = document.createElement('div');
+                    card.className = 'game-card';
+                    // GD API provides full URLs, we must replace them to use our proxy
+                    const proxiedUrl = game.url.replace('https://html5.gamedistribution.com', '/game-proxy');
+                    
+                    card.onclick = () => launchGame(proxiedUrl);
+                    card.innerHTML = `
+                        <img src="${game.asset[0] || ''}" alt="${game.title}">
+                        <p>${game.title}</p>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (e) {
+                document.getElementById('game-grid').innerText = "Failed to load. Your network might be blocking Vercel Rewrites.";
+            }
+        }
+
+        function launchGame(url) {
+            const container = document.getElementById('player-container');
+            const iframe = document.getElementById('game-iframe');
+            
+            // This hides the source URL from simple browser-based filters
+            iframe.src = url;
+            container.style.display = 'block';
+        }
+
+        function closeGame() {
+            document.getElementById('player-container').style.display = 'none';
+            document.getElementById('game-iframe').src = '';
+        }
+
+        loadGames();
+    </script>
+</body>
+</html>
