@@ -1,16 +1,20 @@
 {
   "rewrites": [
     {
-      "source": "/sys/:gameId/:path*",
-      "destination": "https://html5.gamedistribution.com/:gameId/:path*"
+      "source": "/img-sys/:path*",
+      "destination": "https://img.gamedistribution.com/:path*"
+    },
+    {
+      "source": "/sys/:path*",
+      "destination": "https://html5.gamedistribution.com/:path*"
     }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' *" },
-        { "key": "Referrer-Policy", "value": "no-referrer" }
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "X-Frame-Options", "value": "ALLOWALL" }
       ]
     }
   ]
