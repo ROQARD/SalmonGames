@@ -2,102 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Files - Google Drive</title>
+    <title>Storage Drive</title>
+    <script src="https://unpkg.com/@gamepush/sdk/dist/gamepush.js"></script>
     <style>
-        :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
-        
-        .nav { padding: 15px 5%; background: rgba(15, 23, 42, 0.9); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
-        #search { background: #334155; border: none; padding: 10px 20px; border-radius: 20px; color: white; width: 250px; outline: none; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 20px 5%; }
-        .card { background: var(--card); border-radius: 15px; overflow: hidden; cursor: pointer; transition: 0.2s; border: 1px solid #334155; position: relative; }
-        .card:hover { transform: scale(1.05); border-color: var(--accent); z-index: 10; }
-        .card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
-        .card p { margin: 8px; font-size: 13px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; }
-
-        #theater { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; }
-        iframe { width: 100%; height: 100%; border: none; background: white; }
-        .exit { position: absolute; top: 20px; right: 20px; padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        :root { --bg: #0b0f1a; --card: #161b2c; --accent: #7c4dff; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border-radius: 10px; overflow: hidden; cursor: pointer; border: 1px solid #252a3d; transition: 0.2s; }
+        .card:hover { border-color: var(--accent); transform: translateY(-3px); }
+        .card img { width: 100%; height: 120px; object-fit: cover; }
+        .card p { padding: 10px; margin: 0; font-size: 14px; text-align: center; }
+        #overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .close-btn { position: absolute; top: 10px; left: 10px; z-index: 1001; padding: 10px; background: #ff5252; color: white; border: none; cursor: pointer; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <div class="nav">
-        <h2 style="color: var(--accent); margin: 0;">Cloud Portal</h2>
-        <input type="text" id="search" placeholder="Search resources..." onkeyup="search()">
-    </div>
+    <h2 id="welcome">Guest Portal</h2>
+    <div class="grid" id="gameGrid"></div>
 
-    <div class="grid" id="mainGrid"></div>
-
-    <div id="theater">
-        <button class="exit" onclick="closeGame()">Close App</button>
-        <iframe id="gameFrame" allow="autoplay; fullscreen; keyboard; gamepad"></iframe>
+    <div id="overlay">
+        <button class="close-btn" onclick="closeGame()">Exit Game</button>
+        <iframe id="gameFrame"></iframe>
     </div>
 
     <script>
-        // THESE LINKS ALLOW IFRAMING (Hosted on GitHub Pages)
-        const apps = [
-            { 
-                n: "Slope", 
-                i: "https://play-lh.googleusercontent.com/uZnjeMAOmN-T6H1q8-fV2TclK1Y3nK0gC5P7K1E_Tz2A7HwFf-H6EwV1R7m_r7D8", 
-                u: "https://ubg100.github.io/games/slope/index.html" 
-            },
-            { 
-                n: "Retro Bowl", 
-                i: "https://play-lh.googleusercontent.com/1-d0EaYk8R_I9K6bT5g2XJ4c1g7F7G72bZ9m9y3w96c2X6x5l_9a3_V_z1G0u_9q", 
-                u: "https://game316.github.io/retro-bowl/" 
-            },
-            { 
-                n: "Monkey Mart", 
-                i: "https://play-lh.googleusercontent.com/R_W9M_8b_E_Yg7k6V4N8I1g5Z8r_Z_Z_9F1E2_P_v-2w6n_8R9Q8z8e_b_r_W-5", 
-                u: "https://ubg100.github.io/games/monkey-mart/index.html" 
-            },
-            { 
-                n: "1v1.lol", 
-                i: "https://play-lh.googleusercontent.com/N-Q_r1U_w_c_R2_1c2z2c1F_A1c_C_2_P_9_7_2_K_r_0_k_6_U_g_e_q_l", 
-                u: "https://ubg100.github.io/games/1v1-lol/index.html" 
-            },
-            { 
-                n: "Subway Surfers", 
-                i: "https://play-lh.googleusercontent.com/h5rU1T-b5M6A2H1pT6D9_X2c2T5N2F4_u_g_k_F_H_Y_3_T_v_A_T_8_z_F", 
-                u: "https://ubg100.github.io/games/subway-surfers/index.html" 
+        // 1. Initialize GamePush (Replace with your actual ID/Token from gamepush.com)
+        const gp = new GamePush.SDK({
+            id: 'YOUR_PROJECT_ID',
+            token: 'YOUR_PUBLIC_TOKEN'
+        });
+
+        gp.on('ready', () => {
+            console.log("GamePush is ready!");
+            if (gp.player.isLoggedIn) {
+                document.getElementById('welcome').innerText = `Welcome, ${gp.player.name}`;
             }
+        });
+
+        // 2. Your Game List
+        const games = [
+            { n: "Slope", s: "https://slopegame.online/game/slope" },
+            { n: "BitLife", s: "https://bitlifeonline.io/game/bitlife" },
+            { n: "Retro Bowl", s: "https://retrobowl.me/game/retro-bowl" }
         ];
 
-        const grid = document.getElementById('mainGrid');
-
-        function load() {
-            apps.forEach(app => {
-                const item = document.createElement('div');
-                item.className = 'card';
-                item.innerHTML = `<img src="${app.i}"><p>${app.n}</p>`;
-                item.onclick = () => {
-                    document.getElementById('gameFrame').src = app.u;
-                    document.getElementById('theater').style.display = 'block';
-                    document.title = "Math Assignment - Working..."; 
-                };
-                grid.appendChild(item);
-            });
-        }
+        const grid = document.getElementById('gameGrid');
+        games.forEach(game => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.innerHTML = `<img src="https://via.placeholder.com/150/161b2c/ffffff?text=${game.n}"><p>${game.n}</p>`;
+            div.onclick = () => {
+                document.getElementById('gameFrame').src = game.s;
+                document.getElementById('overlay').style.display = 'block';
+                // Trigger a GamePush event (e.g., track that a game was opened)
+                gp.analytics.goal('game_opened', { name: game.n });
+            };
+            grid.appendChild(div);
+        });
 
         function closeGame() {
-            document.getElementById('theater').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
             document.getElementById('gameFrame').src = '';
-            document.title = "My Files - Google Drive";
         }
-
-        function search() {
-            let filter = document.getElementById('search').value.toLowerCase();
-            let cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                let text = card.querySelector('p').innerText.toLowerCase();
-                card.style.display = text.includes(filter) ? "block" : "none";
-            });
-        }
-
-        load();
     </script>
 </body>
 </html>
