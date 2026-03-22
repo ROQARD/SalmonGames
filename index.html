@@ -3,40 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title> <style>
+    <title>Workspace</title> <style>
         :root { --bg: #0f172a; --card: #1e293b; --text: #f8fafc; --accent: #38bdf8; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 20px; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: var(--card); border-radius: 12px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid #334155; }
-        .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        .card img { width: 100%; height: 120px; object-fit: cover; background: #000; }
-        .card p { padding: 10px; margin: 0; font-size: 14px; font-weight: 600; text-align: center; }
+        .card { background: var(--card); border-radius: 12px; overflow: hidden; cursor: pointer; transition: 0.3s; border: 1px solid #334155; position: relative; }
+        .card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .card img { width: 100%; height: 130px; object-fit: cover; display: block; background: #000; }
+        .card p { padding: 12px; margin: 0; font-size: 14px; font-weight: bold; text-align: center; }
         
         #screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; }
         iframe { width: 100%; height: 100%; border: none; }
-        .back { position: absolute; top: 15px; left: 15px; padding: 10px 20px; background: var(--accent); color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .back { position: absolute; top: 15px; left: 15px; padding: 10px 20px; background: var(--accent); color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; z-index: 10000; }
     </style>
 </head>
 <body>
 
-    <h2 style="text-align:center; color: var(--accent);">Web Applications</h2>
+    <h1 style="text-align:center; color: var(--accent); margin-bottom: 30px;">Web Dashboard</h1>
+    
     <div class="grid" id="gameGrid"></div>
 
     <div id="screen">
-        <button class="back" onclick="closeApp()">← Back to Dashboard</button>
-        <iframe id="frame" allow="autoplay; fullscreen; keyboard"></iframe>
+        <button class="back" onclick="closeApp()">← Return</button>
+        <iframe id="frame" allow="autoplay; fullscreen; keyboard; gamepad"></iframe>
     </div>
 
     <script>
-        // HARDCODED DATABASE - These will always load.
-        // Paths are converted to use your /sys/ proxy
+        // PROXIED DATABASE 
+        // We replaced "https://img.gamedistribution.com" with "/img-sys"
         const apps = [
-            { n: "Subway Surfers", i: "https://img.gamedistribution.com/c665f80f1a6f44f997675908b2d1668c-512x512.jpeg", u: "/sys/c665f80f1a6f44f997675908b2d1668c/index.html" },
-            { n: "Monkey Mart", i: "https://img.gamedistribution.com/4924b6f1f251457189a69116e0edb826-512x512.jpeg", u: "/sys/4924b6f1f251457189a69116e0edb826/index.html" },
-            { n: "Stickman Hook", i: "https://img.gamedistribution.com/83021f1088484a0c8b650577771239c0-512x512.jpeg", u: "/sys/83021f1088484a0c8b650577771239c0/index.html" },
-            { n: "Eaglercraft", i: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3yv4N9n075XN09j-9R660zT", u: "https://g.eaglercraft.com" },
-            { n: "Moto X3M", i: "https://img.gamedistribution.com/264560737a0d421783510e9766624925-512x512.jpeg", u: "/sys/264560737a0d421783510e9766624925/index.html" },
-            { n: "Drive Mad", i: "https://img.gamedistribution.com/6090967959fc43888806229419f7cc8c-512x512.jpeg", u: "/sys/6090967959fc43888806229419f7cc8c/index.html" }
+            { n: "Subway Surfers", i: "/img-sys/c665f80f1a6f44f997675908b2d1668c-512x512.jpeg", u: "/sys/c665f80f1a6f44f997675908b2d1668c/index.html" },
+            { n: "Monkey Mart", i: "/img-sys/4924b6f1f251457189a69116e0edb826-512x512.jpeg", u: "/sys/4924b6f1f251457189a69116e0edb826/index.html" },
+            { n: "Stickman Hook", i: "/img-sys/83021f1088484a0c8b650577771239c0-512x512.jpeg", u: "/sys/83021f1088484a0c8b650577771239c0/index.html" },
+            { n: "Moto X3M", i: "/img-sys/264560737a0d421783510e9766624925-512x512.jpeg", u: "/sys/264560737a0d421783510e9766624925/index.html" },
+            { n: "Drive Mad", i: "/img-sys/6090967959fc43888806229419f7cc8c-512x512.jpeg", u: "/sys/6090967959fc43888806229419f7cc8c/index.html" },
+            { n: "BitLife", i: "/img-sys/703b306466f2402197607a4b11f7c75a-512x512.jpeg", u: "/sys/703b306466f2402197607a4b11f7c75a/index.html" }
         ];
 
         const grid = document.getElementById('gameGrid');
@@ -44,7 +45,7 @@
         apps.forEach(app => {
             const div = document.createElement('div');
             div.className = 'card';
-            div.innerHTML = `<img src="${app.i}"><p>${app.n}</p>`;
+            div.innerHTML = `<img src="${app.i}" onerror="this.src='https://via.placeholder.com/150/000000/FFFFFF?text=Error'"><p>${app.n}</p>`;
             div.onclick = () => launch(app.u);
             grid.appendChild(div);
         });
@@ -53,18 +54,18 @@
             const screen = document.getElementById('screen');
             const frame = document.getElementById('frame');
             
-            // This is the "Stealth" trigger. It masks the referrer.
+            // Sets the iframe to the proxied URL
             frame.src = url;
             screen.style.display = 'block';
             
-            // Optional: Changes tab title to look like schoolwork when playing
-            document.title = "Google Docs"; 
+            // Changes the tab title so it looks like schoolwork while playing
+            document.title = "My Project - Google Docs"; 
         }
 
         function closeApp() {
             document.getElementById('screen').style.display = 'none';
-            document.getElementById('frame').src = '';
-            document.title = "Dashboard";
+            document.getElementById('frame').src = 'about:blank';
+            document.title = "Workspace";
         }
     </script>
 </body>
