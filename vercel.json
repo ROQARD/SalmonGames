@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/game-api/:path*",
+      "destination": "https://api.gamedistribution.com/:path*"
+    },
+    {
+      "source": "/play/:gameId/:path*",
+      "destination": "https://html5.gamedistribution.com/:gameId/:path*"
+    }
+  ]
+}
