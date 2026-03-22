@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Files - Google Drive</title> <style>
+    <title>My Files - Google Drive</title>
+    <style>
         :root { --bg: #0f172a; --card: #1e293b; --accent: #38bdf8; --text: #f1f5f9; }
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
         
-        /* Top Navigation */
         .nav { padding: 15px 5%; background: rgba(15, 23, 42, 0.9); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
         #search { background: #334155; border: none; padding: 10px 20px; border-radius: 20px; color: white; width: 250px; outline: none; }
         
-        /* Game Grid */
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 20px 5%; }
         .card { background: var(--card); border-radius: 15px; overflow: hidden; cursor: pointer; transition: 0.2s; border: 1px solid #334155; position: relative; }
         .card:hover { transform: scale(1.05); border-color: var(--accent); z-index: 10; }
         .card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
         .card p { margin: 8px; font-size: 13px; font-weight: 600; text-align: center; white-space: nowrap; overflow: hidden; }
 
-        /* Fullscreen Player */
         #theater { display: none; position: fixed; inset: 0; background: #000; z-index: 1000; }
-        iframe { width: 100%; height: 100%; border: none; }
+        iframe { width: 100%; height: 100%; border: none; background: white; }
         .exit { position: absolute; top: 20px; right: 20px; padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -39,18 +37,33 @@
     </div>
 
     <script>
-        // OFFICIAL GAMESNACKS DATA (Google-hosted)
+        // THESE LINKS ALLOW IFRAMING (Hosted on GitHub Pages)
         const apps = [
-            { n: "Subway Surfers", s: "subway_surfers" },
-            { n: "Om Nom Run", s: "om_nom_run" },
-            { n: "Dino Run", s: "dino_run" },
-            { n: "Tower Building", s: "tower_v2" },
-            { n: "Cake Slice Ninja", s: "cakesliceninja" },
-            { n: "Element Blocks", s: "elementblocks" },
-            { n: "Pinball", s: "pinball" },
-            { n: "Stair Race 3D", s: "stairrace3d" },
-            { n: "Cannon Balls 3D", s: "cannonballs3d" },
-            { n: "Bridge Legend", s: "bridgelegend" }
+            { 
+                n: "Slope", 
+                i: "https://play-lh.googleusercontent.com/uZnjeMAOmN-T6H1q8-fV2TclK1Y3nK0gC5P7K1E_Tz2A7HwFf-H6EwV1R7m_r7D8", 
+                u: "https://ubg100.github.io/games/slope/index.html" 
+            },
+            { 
+                n: "Retro Bowl", 
+                i: "https://play-lh.googleusercontent.com/1-d0EaYk8R_I9K6bT5g2XJ4c1g7F7G72bZ9m9y3w96c2X6x5l_9a3_V_z1G0u_9q", 
+                u: "https://game316.github.io/retro-bowl/" 
+            },
+            { 
+                n: "Monkey Mart", 
+                i: "https://play-lh.googleusercontent.com/R_W9M_8b_E_Yg7k6V4N8I1g5Z8r_Z_Z_9F1E2_P_v-2w6n_8R9Q8z8e_b_r_W-5", 
+                u: "https://ubg100.github.io/games/monkey-mart/index.html" 
+            },
+            { 
+                n: "1v1.lol", 
+                i: "https://play-lh.googleusercontent.com/N-Q_r1U_w_c_R2_1c2z2c1F_A1c_C_2_P_9_7_2_K_r_0_k_6_U_g_e_q_l", 
+                u: "https://ubg100.github.io/games/1v1-lol/index.html" 
+            },
+            { 
+                n: "Subway Surfers", 
+                i: "https://play-lh.googleusercontent.com/h5rU1T-b5M6A2H1pT6D9_X2c2T5N2F4_u_g_k_F_H_Y_3_T_v_A_T_8_z_F", 
+                u: "https://ubg100.github.io/games/subway-surfers/index.html" 
+            }
         ];
 
         const grid = document.getElementById('mainGrid');
@@ -59,13 +72,11 @@
             apps.forEach(app => {
                 const item = document.createElement('div');
                 item.className = 'card';
-                // Using gstatic.com for thumbnails because it is NEVER blocked.
-                const imgUrl = `https://www.gstatic.com/gamesnacks/images/${app.s}/thumbnail_512.png`;
-                item.innerHTML = `<img src="${imgUrl}"><p>${app.n}</p>`;
+                item.innerHTML = `<img src="${app.i}"><p>${app.n}</p>`;
                 item.onclick = () => {
-                    document.getElementById('gameFrame').src = `https://gamesnacks.com/embed/games/${app.s}`;
+                    document.getElementById('gameFrame').src = app.u;
                     document.getElementById('theater').style.display = 'block';
-                    document.title = "Math Assignment - Working..."; // Stealth
+                    document.title = "Math Assignment - Working..."; 
                 };
                 grid.appendChild(item);
             });
