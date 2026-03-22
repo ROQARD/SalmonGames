@@ -1,12 +1,20 @@
 {
   "rewrites": [
     {
-      "source": "/game-api/:path*",
+      "source": "/api-proxy/:path*",
       "destination": "https://api.gamedistribution.com/:path*"
     },
     {
-      "source": "/play/:gameId/:path*",
-      "destination": "https://html5.gamedistribution.com/:gameId/:path*"
+      "source": "/game-proxy/:path*",
+      "destination": "https://html5.gamedistribution.com/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
     }
   ]
 }
