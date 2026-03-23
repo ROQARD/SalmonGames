@@ -1,20 +1,26 @@
-const API_URL = "https://www.freetogame.com/api/games";
+// The Endpoint from your list
+const API_URL = "https://www.freetogame.com/api/games?platform=browser";
 
-async function fetchGames() {
+// We use a public proxy to bypass the CORS block
+const PROXY = "https://corsproxy.io/?"; 
+
+async function fetchSalmonGames() {
     const grid = document.getElementById('game-grid');
-
+    
     try {
-        const response = await fetch(API_URL);
+        // Combine Proxy + API URL
+        const response = await fetch(PROXY + encodeURIComponent(API_URL));
+        
+        if (!response.ok) throw new Error("API Limit reached or blocked");
+        
         const games = await response.json();
+        grid.innerHTML = ""; // Clear the "Failed to load" message
 
-        // Clear the grid
-        grid.innerHTML = "";
-
-        // Display the first 50 games from the API
-        games.slice(0, 50).forEach(game => {
+        // Take the top 30 Browser games
+        games.slice(0, 30).forEach(game => {
             const card = document.createElement('div');
             card.className = 'game-card';
-
+            
             card.innerHTML = `
                 <img src="${game.thumbnail}" alt="${game.title}">
                 <div class="game-info">
@@ -23,7 +29,7 @@ async function fetchGames() {
                 </div>
             `;
 
-            // Clicking a card takes you to the game
+            // Clicking opens the game URL
             card.onclick = () => {
                 window.open(game.game_url, '_blank');
             };
@@ -31,10 +37,9 @@ async function fetchGames() {
             grid.appendChild(card);
         });
     } catch (error) {
-        console.error("Error fetching games:", error);
-        grid.innerHTML = "<p>Failed to load games. Check your connection.</p>";
+        console.error("Salmon Games Error:", error);
+        grid.innerHTML = `<p>Salmon Games is having trouble jumping upstream. <br> Error: ${error.message}</p>`;
     }
 }
 
-// Start the fetch when the page loads
-fetchGames();
+fetchSalmonGames();
