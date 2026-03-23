@@ -1,39 +1,40 @@
-// Example list of games. Add your Defold exports here!
-const games = [
-    {
-        title: "Salmon Leap",
-        icon: "assets/icons/salmon-leap.png",
-        url: "games/salmon-leap/index.html"
-    },
-    {
-        title: "Bubble Pop",
-        icon: "assets/icons/bubble-pop.png",
-        url: "games/bubble-pop/index.html"
+const API_URL = "https://www.freetogame.com/api/games";
+
+async function fetchGames() {
+    const grid = document.getElementById('game-grid');
+
+    try {
+        const response = await fetch(API_URL);
+        const games = await response.json();
+
+        // Clear the grid
+        grid.innerHTML = "";
+
+        // Display the first 50 games from the API
+        games.slice(0, 50).forEach(game => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+
+            card.innerHTML = `
+                <img src="${game.thumbnail}" alt="${game.title}">
+                <div class="game-info">
+                    <span class="game-title">${game.title}</span>
+                    <span class="game-genre">${game.genre}</span>
+                </div>
+            `;
+
+            // Clicking a card takes you to the game
+            card.onclick = () => {
+                window.open(game.game_url, '_blank');
+            };
+
+            grid.appendChild(card);
+        });
+    } catch (error) {
+        console.error("Error fetching games:", error);
+        grid.innerHTML = "<p>Failed to load games. Check your connection.</p>";
     }
-];
+}
 
-const grid = document.getElementById('game-grid');
-const modal = document.getElementById('game-modal');
-const frame = document.getElementById('game-frame');
-const closeBtn = document.querySelector('.close-button');
-
-// Render the grid
-games.forEach(game => {
-    const card = document.createElement('div');
-    card.className = 'game-card';
-    card.innerHTML = `
-        <img src="${game.icon}" alt="${game.title}">
-        <span>${game.title}</span>
-    `;
-    card.onclick = () => {
-        frame.src = game.url;
-        modal.style.display = 'block';
-    };
-    grid.appendChild(card);
-});
-
-// Close functionality
-closeBtn.onclick = () => {
-    modal.style.display = 'none';
-    frame.src = ""; // Stop the game audio/logic when closed
-};
+// Start the fetch when the page loads
+fetchGames();
