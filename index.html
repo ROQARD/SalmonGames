@@ -3,83 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salmon Games | Education Portal</title>
+    <title>Salmon Games | v1.0.4</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
     <style>
-        body {
-            background-color: #2c3e50;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-            background: #e67e22;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .logo { font-size: 24px; font-weight: bold; text-transform: uppercase; }
+        :root { --salmon: #ff7675; --dark: #2d3436; --poki-blue: #74b9ff; }
+        body { background: var(--dark); color: white; font-family: 'Arial', sans-serif; margin: 0; overflow-x: hidden; }
         
-        /* The Poki-style Grid */
+        header { 
+            background: #e67e22; padding: 15px 5%; 
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .logo { font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; }
+
+        /* The Poki/Duckmath Grid Layout */
+        .container { padding: 30px 5%; }
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
         }
+
         .game-card {
-            background: #34495e;
-            border-radius: 15px;
-            aspect-ratio: 1 / 1;
+            background: #3d4648;
+            border-radius: 18px;
+            aspect-ratio: 1/1;
+            cursor: pointer;
+            transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.2s;
-            border-bottom: 5px solid #212f3d;
+            border-bottom: 6px solid #1e2223;
+            position: relative;
             overflow: hidden;
         }
-        .game-card:hover {
-            transform: translateY(-5px);
-            background: #fa8231;
-        }
-        .game-card img { width: 100%; height: 80%; object-fit: cover; }
-        .game-card span { padding: 10px; font-weight: bold; font-size: 14px; }
 
-        /* Fullscreen Game Overlay */
-        #game-container {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
+        .game-card:hover { transform: scale(1.05); background: var(--salmon); }
+        
+        .thumb-placeholder { width: 100%; height: 75%; background: rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .game-title { padding: 10px; font-weight: bold; font-size: 0.9rem; text-align: center; }
+
+        /* Game Stage Overlay */
+        #stage {
+            display: none; position: fixed; top: 0; left: 0; 
+            width: 100vw; height: 100vh; background: black; z-index: 999;
         }
         #close-btn {
-            position: absolute; top: 20px; right: 20px;
-            padding: 10px 20px; background: #e74c3c; color: white;
-            border: none; border-radius: 5px; cursor: pointer;
+            position: absolute; top: 10px; right: 20px;
+            background: var(--salmon); border: none; color: white;
+            padding: 10px 20px; border-radius: 5px; cursor: pointer; z-index: 1000;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">Salmon Games</div>
-    <nav>Trending • New • Logic</nav>
+    <div class="logo">SALMON GAMES 🐟</div>
+    <div>Search...</div>
 </header>
 
-<div class="game-grid" id="grid">
-    </div>
+<div class="container">
+    <div class="game-grid" id="game-list">
+        </div>
+</div>
 
-<div id="game-container">
-    <button id="close-btn">BACK TO HUB</button>
+<div id="stage">
+    <button id="close-btn">X CLOSE GAME</button>
 </div>
 
 <script src="main.js"></script>
